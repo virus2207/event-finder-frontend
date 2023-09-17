@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import googleMapDirection from './GoogleMapDirection';
 import YelpComponent from './YelpComponent';
+import { fetchConfig } from './utils/fetchConfig';
 
 
 function EventList({ city }) {
@@ -10,20 +11,59 @@ function EventList({ city }) {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showRestaurants, setShowRestaurants] = useState(false);
     const [showMap, setShowMap] = useState(false);
+    const [pageCount, setPageCount] = useState(0); // Initialize the page count
+
+    // useEffect(() => {
+    //     // Fetch the page count from your server
+
+    const fetchPageCount = async () => {
+        try {
+            const backendURL = await fetchConfig();
+            const response = await fetch(`${backendURL}/getPageCount`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            setPageCount(data.count);
+
+        } catch (error) {
+            console.error('Error fetching page count:', error);
+        }
+    };
+
+    // Call the function to fetch the page count
+
+
 
 
     useEffect(() => {
-        // Fetch event data from your Express API
-        fetch(`http://localhost:3000/events/${city}`)
-            .then((response) => response.json())
-            .then((data) => {
+
+        const fetchData = async () => {
+            try {
+                const backendURL = await fetchConfig();
+                console.log(backendURL)
+                // Now we have the backendURL, we can make fetch requests to it
+                const response = await fetch(`${backendURL}/events/${city}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
                 setEvents(data);
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.error('Error fetching event data:', error);
-            });
+            }
+        };
+
+        // Call the asynchronous function to fetch data
+        fetchData();
+
     }, [city]);
 
+    useEffect(() => {
+        fetchPageCount();
+    }, []);
 
     const openGoogleMap = (event) => {
         // setSelectedEvent(event);
@@ -53,6 +93,9 @@ function EventList({ city }) {
     return (
 
         <div className='event-container'>
+
+            {/* Display the page count */}
+            <p>Page Count: {pageCount}</p>
 
             {events.map((event) => (
                 <div className='event-details' key={event.id}> {/* a unique "key" prop to the enclosing element */}

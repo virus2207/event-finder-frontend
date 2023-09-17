@@ -1,4 +1,5 @@
 /* global google */
+import { fetchConfig } from "./utils/fetchConfig"
 const googleMapDirection = async (eventGeo) => {
     try {
 
@@ -11,7 +12,11 @@ const googleMapDirection = async (eventGeo) => {
             navigator.geolocation.getCurrentPosition(async (position) => {
                 const userLat = position.coords.latitude;
                 const userLng = position.coords.longitude
-                const response = await fetch(`http://localhost:3000/events/direction/${userLat},${userLng}/${eventGeo}`);
+
+                const backendURL = await fetchConfig();
+                console.log(backendURL);
+                //const response = await fetch(`http://localhost:3000/events/direction/${userLat},${userLng}/${eventGeo}`);
+                const response = await fetch(`${backendURL}/events/direction/${userLat},${userLng}/${eventGeo}`);
                 const data = await response.json();
 
                 const bounds = new google.maps.LatLngBounds(

@@ -1,18 +1,31 @@
 import React, { useEffect, useState } from "react";
+import { fetchConfig } from "./utils/fetchConfig";
 
 function YelpComponent({ eventLat, eventLang }) {
     const [restaurants, setRestaurants] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:3000/restaurant/${eventLat}/${eventLang}`)
-            .then((response) => response.json())
-            .then((data) => {
-                setRestaurants(data)
-            })
-            .catch((error) => {
-                console.error("error fetching data", error)
-            })
-    }, [])
+        const fetchData = async () => {
+            try {
+                const backendURL = await fetchConfig();
+                console.log(backendURL);
+
+                const response = await fetch(`${backendURL}/restaurant/${eventLat}/${eventLang}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                setRestaurants(data);
+            } catch (error) {
+                console.error("Error fetching data", error);
+            }
+        };
+
+        // Call the asynchronous function to fetch data
+        fetchData();
+    }, []);
 
     return (
         <div>

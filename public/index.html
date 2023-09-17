@@ -3,18 +3,15 @@
 
 <head>
   <meta charset="utf-8" />
-  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#000000" />
-  <meta name="description" content="Web site created using create-react-app" />
-  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
 
   <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-  <!--
+
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
       Only files inside the `public` folder can be referenced from the HTML.
@@ -23,11 +20,46 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-  <title>React App</title>
 
-  <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLgpY3NiI5Pb7UBIiQba--daLSWqjJxJg&libraries=geometry&callback=initMap"></script>
-  <script> src = "src/EventList.js"</script>
+
+  <script>
+    src = "src/EventList.js"</script>
+  <script>
+    // Define a function to fetch the backend URL
+    async function fetchBackendURL() {
+      try {
+        const response = await fetch("/config.json"); // Wait for the fetch to complete
+        const config = await response.json(); // Wait for JSON parsing
+        return config.backendAPI;
+      } catch (error) {
+        console.error('Error fetching backend URL:', error);
+        return ''; // Default value or handle the error as needed
+      }
+    }
+
+    // Call the function to fetch the backend URL
+    fetchBackendURL().then((backendURL) => {
+      if (backendURL) {
+        // Create a script element and set its src attribute
+        const scriptElement = document.createElement('script');
+        scriptElement.src = `${backendURL}/map`;
+
+        // Append the script to the document
+        document.head.appendChild(scriptElement);
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+  <!-- ... -->
+</body>
+
+</html>
+
+
 </head>
 
 <body>
